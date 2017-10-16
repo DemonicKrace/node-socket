@@ -1,0 +1,271 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script>
+      //string format
+      String.prototype.format = function() {
+        var str = this;
+        for (var i = 0; i < arguments.length; i++) {
+          var reg = new RegExp("\\{" + i + "\\}", "gm");
+          str = str.replace(reg, arguments[i]);
+        }
+        return str;
+      }
+
+      function addInjureRunner(){
+        var json_data = {
+          runner_id: $('[name="add_1"]').val(),
+          recv_time: $('[name="add_2"]').val(),
+          rescuer_id: $('[name="add_3"]').val(),
+          arrival_time: $('[name="add_4"]').val(),
+          finish_time: $('[name="add_5"]').val(),
+          chief_complaint: $('[name="add_6"]').val(),
+          trauma_part: $('[name="add_7"]').val(),
+          diagnosis: $('[name="add_8"]').val(),
+          trauma_type: $('[name="add_9"]').val(),
+          current_cure: $('[name="add_10"]').val(),
+          later_cure: $('[name="add_11"]').val(),
+        }
+
+//        alert(Object.keys(json_data).length);
+        console.log(json_data);
+
+        $.post("/api/rescue/addOneRescueEvent", JSON.stringify(json_data), function(result){
+          console.log("result = " + result);
+        });
+
+       /*
+        $.ajax({
+          type: 'POST',
+          url: '/api/rescue/addOneRescueEvent',
+          data: json_data, // or JSON.stringify ({name: 'jonas'}),
+          contentType: "application/json",
+          dataType: 'json'
+        }).done(function(data) {
+            console.log(data);
+        })
+        .fail(function(error) {
+            console.error(error);
+        });
+        */
+
+      }
+
+      function assignEventToRescuer(){
+
+      }
+
+      function updateFinishedRecuseEvent(){
+
+      }
+
+
+
+      $(document).ready(function(){
+
+        //初始化救援事件表
+        $.get( "/api/rescue/getAllRescueEvents", function( data ) {
+          console.log(JSON.parse(data));
+
+          $(JSON.parse(data)).each(function(index, element) {
+//            console.log(element);
+//            var col_count = Object.keys(element).length;
+//            console.log(count);
+            var row = "<tr>\
+                        <td>{0}</td>\
+                        <td>{1}</td>\
+                        <td>{2}</td>\
+                        <td>{3}</td>\
+                        <td>{4}</td>\
+                        <td>{5}</td>\
+                        <td>{6}</td>\
+                        <td>{7}</td>\
+                        <td>{8}</td>\
+                        <td>{9}</td>\
+                        <td>{10}</td>\
+                      </tr>".format(element.runner_id ? element.runner_id : "",
+                        element.recv_time ? element.recv_time : "",
+                        element.rescuer_id ? element.rescuer_id : "",
+                        element.arrival_time ? element.arrival_time : "",
+                        element.finish_time ? element.finish_time : "",
+                        element.chief_complaint ? element.chief_complaint : "",
+                        element.trauma_part ? element.trauma_part : "",
+                        element.diagnosis ? element.diagnosis : "",
+                        element.trauma_type ? element.trauma_type : "",
+                        element.current_cure ? element.current_cure : "",
+                        element.later_cure ? element.later_cure : "");
+            $('#rescue_table').append(row);
+          });
+        });
+
+        //增加救援事件
+        $("#add_rescue_event_btn").click(function(){
+          addInjureRunner();
+        });
+
+        //指派醫護人員
+        $("#assign_rescue_event_btn").click(function(){
+          assignEventToRescuer();
+        });
+
+        //救援事件完成
+        $("#finish_rescue_event_btn").click(function(){
+          updateFinishedRecuseEvent();
+        });
+
+
+      });
+    </script>
+    <style type="text/css">
+      table{
+        margin-top: 100px;
+        width:100%;
+      }
+      table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+        text-align: center;
+      }
+      button{
+        font-size: 20px;
+        height: 50px;
+        width: 150px;
+      }
+      input{
+        width: 50px;
+      }
+
+    </style>
+  </head>
+  <body>
+
+
+    <table id="add_table">
+      <tr>
+        <th>受傷跑者</th>
+        <th>收到通知</th>
+        <th>救援人員</th>
+        <th>到達救援</th>
+        <th>完成救援</th>
+        <th>主訴</th>
+        <th>外傷描述位置</th>
+        <th>診斷</th>
+        <th>外傷</th>
+        <th>現場治療</th>
+        <th>後續處置</th>
+      </tr>
+      <tr>
+        <td><input type="text" name="add_1"></td>
+        <td><input type="text" name="add_2"></td>
+        <td><input type="text" name="add_3"></td>
+        <td><input type="text" name="add_4"></td>
+        <td><input type="text" name="add_5"></td>
+        <td><input type="text" name="add_6"></td>
+        <td><input type="text" name="add_7"></td>
+        <td><input type="text" name="add_8"></td>
+        <td><input type="text" name="add_9"></td>
+        <td><input type="text" name="add_10"></td>
+        <td><input type="text" name="add_11"></td>
+      </tr>
+      <tr>
+        <td colspan="12" class="centerCol">
+          <button id="add_rescue_event_btn">增加救援事件</button>
+        </td>
+      </tr>
+    </table>
+
+    <table id="assign_table">
+      <tr>
+        <th>受傷跑者</th>
+        <th>收到通知</th>
+        <th>救援人員</th>
+        <!--
+        <th>到達救援</th>
+        <th>完成救援</th>
+        <th>救援事項</th>
+        <th>主訴</th>
+        <th>外傷描述位置</th>
+        <th>診斷</th>
+        <th>外傷</th>
+        <th>現場治療</th>
+        <th>後續處置</th>
+      -->
+      </tr>
+      <tr>
+        <td><input type="text" name="assign_1"></td>
+        <td><input type="text" name="assign_2"></td>
+        <td><input type="text" name="assign_3"></td>
+        <!--
+        <td><input type="text" name="assign_4"></td>
+        <td><input type="text" name="assign_5"></td>
+        <td><input type="text" name="assign_6"></td>
+        <td><input type="text" name="assign_7"></td>
+        <td><input type="text" name="assign_8"></td>
+        <td><input type="text" name="assign_9"></td>
+        <td><input type="text" name="assign_10"></td>
+        <td><input type="text" name="assign_11"></td>
+        <td><input type="text" name="assign_12"></td>
+        -->
+      </tr>
+      <tr>
+        <td colspan="12" class="centerCol">
+          <button id="assign_rescue_event_btn">指派救援人員</button>
+        </td>
+      </tr>
+    </table>
+
+    <table id="finish_table">
+      <tr>
+        <th>受傷跑者</th>
+        <th>收到通知</th>
+        <th>救援人員</th>
+        <th>到達救援</th>
+        <th>完成救援</th>
+        <th>主訴</th>
+        <th>外傷描述位置</th>
+        <th>診斷</th>
+        <th>外傷</th>
+        <th>現場治療</th>
+        <th>後續處置</th>
+      </tr>
+      <tr>
+        <td><input type="text" name="finish_1"></td>
+        <td><input type="text" name="finish_2"></td>
+        <td><input type="text" name="finish_3"></td>
+        <td><input type="text" name="finish_4"></td>
+        <td><input type="text" name="finish_5"></td>
+        <td><input type="text" name="finish_6"></td>
+        <td><input type="text" name="finish_7"></td>
+        <td><input type="text" name="finish_8"></td>
+        <td><input type="text" name="finish_9"></td>
+        <td><input type="text" name="finish_10"></td>
+        <td><input type="text" name="finish_11"></td>
+      </tr>
+      <tr>
+        <td colspan="12" class="centerCol">
+          <button id="finish_rescue_event_btn">救援任務完成</button>
+        </td>
+      </tr>
+    </table>
+
+    <table id="rescue_table">
+      <tr>
+        <th rowspan="2">受傷跑者</th>
+        <th rowspan="2">收到通知</th>
+        <th rowspan="2">救援人員</th>
+        <th rowspan="2">到達救援</th>
+        <th rowspan="2">完成救援</th>
+        <th colspan="6">救援事項</th>
+      </tr>
+      <tr>
+        <th>主訴</th>
+        <th>外傷描述位置</th>
+        <th>診斷</th>
+        <th>外傷</th>
+        <th>現場治療</th>
+        <th>後續處置</th>
+      </tr>
+    </table>
+  </body>
+</html>
